@@ -166,7 +166,7 @@ export default async function GunungDetail({
         {/* ── DATA FOOTER ── */}
         <footer className="px-5 mt-20 pt-8 border-t border-[#c8b896] flex flex-col gap-4">
           <div className="flex justify-between font-mono text-[8px] uppercase tracking-[0.2em] text-[#c8b896]">
-            <span>Verified_Record // 2026</span>
+            {/* <span>Verified_Record // 2026</span> */}
             <span>{gunung.title}_IDX_001</span>
           </div>
           <p className="font-mono text-[8px] leading-loose text-[#c8b896]">
