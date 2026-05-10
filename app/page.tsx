@@ -161,7 +161,7 @@ export default async function Home() {
                     src={urlFor(gunung.coverImage).width(800).url()}
                     alt={gunung.title}
                     fill
-                    className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-100"
+                    className="object-cover"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center font-mono text-[9px] tracking-widest text-[#c8b896]">
@@ -194,7 +194,7 @@ export default async function Home() {
               {/* Footer arrow */}
               <div className="flex justify-between items-center mt-3">
                 <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#8b4513]">
-                  {gunung.rutaUtama ?? "Via Basecamp"}
+                  {gunung.jalur ?? "Via Basecamp"}
                 </span>
                 <span className="font-serif text-lg text-[#c8b896] transition-transform duration-300 group-hover:translate-x-1.5">
                   →
