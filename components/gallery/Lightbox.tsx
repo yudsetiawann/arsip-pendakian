@@ -53,6 +53,18 @@ export default function Lightbox({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [selectedImage, handlePrev, handleNext]);
 
+  // Toggle class on document html for modal open state
+  useEffect(() => {
+    if (selectedImage) {
+      document.documentElement.classList.add("lightbox-open");
+    } else {
+      document.documentElement.classList.remove("lightbox-open");
+    }
+    return () => {
+      document.documentElement.classList.remove("lightbox-open");
+    };
+  }, [selectedImage]);
+
   return (
     <>
       {/* ── MASONRY GRID CUSTOM ── */}
@@ -187,7 +199,7 @@ export default function Lightbox({
             </motion.div>
 
             {/* HUD bottom footer */}
-            <div className="absolute inset-x-6 bottom-6 pointer-events-none flex justify-between font-mono text-[8px] sm:text-[9px] text-[#c8b896] uppercase tracking-[0.25em] z-10">
+            <div className="absolute inset-x-6 bottom-6 pointer-events-none hidden md:flex justify-between font-mono text-[8px] sm:text-[9px] text-[#c8b896] uppercase tracking-[0.25em] z-10">
               <span>ESC: Tutup_Arsip</span>
               <span>A / D / Arah Panah: Navigasi</span>
             </div>

@@ -42,7 +42,7 @@ export default async function GunungDetail({
   }
 
   return (
-    <main className="relative min-h-screen bg-[#f5f0e8] text-[#1a1510] pb-24 pt-16 px-4 md:px-8 overflow-hidden">
+    <main className="relative min-h-screen bg-[#f5f0e8] text-[#1a1510] pb-24 pt-20 md:pt-28 px-4 md:px-8 overflow-hidden">
       {/* Topographic Background Overlay */}
       <div
         className="fixed inset-0 z-0 pointer-events-none opacity-[0.05]"

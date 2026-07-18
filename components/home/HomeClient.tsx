@@ -5,21 +5,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, SlidersHorizontal, ArrowUpDown, Compass } from "lucide-react";
-import { urlFor } from "@/lib/sanity-utils";
+import { urlFor, type GunungData } from "@/lib/sanity-utils";
 
-interface Gunung {
-  _id: string;
-  title: string;
-  slug: { current: string };
-  elevasi: number;
-  tanggal?: string;
-  provinsi: string;
-  jalur?: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  coverImage?: any;
-}
-
-export default function HomeClient({ initialGunung }: { initialGunung: Gunung[] }) {
+export default function HomeClient({ initialGunung }: { initialGunung: GunungData[] }) {
   const [search, setSearch] = useState("");
   const [selectedProvinsi, setSelectedProvinsi] = useState("Semua");
   const [sortBy, setSortBy] = useState<"elevasi-desc" | "elevasi-asc" | "tanggal-desc" | "title-asc">("tanggal-desc");
@@ -40,7 +28,7 @@ export default function HomeClient({ initialGunung }: { initialGunung: Gunung[] 
 
   // Get all unique provinces
   const provinsiList = useMemo(() => {
-    const provs = initialGunung.map((g) => g.provinsi).filter(Boolean);
+    const provs = initialGunung.map((g) => g.provinsi).filter((p): p is string => !!p);
     return ["Semua", ...Array.from(new Set(provs))];
   }, [initialGunung]);
 
@@ -98,7 +86,7 @@ export default function HomeClient({ initialGunung }: { initialGunung: Gunung[] 
   };
 
   return (
-    <main className="relative min-h-screen bg-[#f5f0e8] text-[#1a1510] pb-24 pt-16 px-4 md:px-8 overflow-hidden">
+    <main className="relative min-h-screen bg-[#f5f0e8] text-[#1a1510] pb-24 pt-20 md:pt-28 px-4 md:px-8 overflow-hidden">
       {/* ── PARALLAX TOPOGRAPHIC BACKGROUND ── */}
       <motion.div
         className="fixed inset-0 pointer-events-none opacity-[0.07] z-0"
@@ -347,7 +335,7 @@ export default function HomeClient({ initialGunung }: { initialGunung: Gunung[] 
                               <p className="font-mono text-[7px] uppercase tracking-wider text-stone-400">Akses Jalur</p>
                               <p className="font-mono text-[9px] text-stone-700 mt-0.5">{gunung.jalur ?? "Via Basecamp"}</p>
                             </div>
-                            <Link href={`/gunung/${gunung.slug.current}`}>
+                            <Link href={`/gunung/${gunung.slug?.current}`}>
                               <span className="inline-flex items-center justify-center w-8 h-8 rounded-full border border-stone-300 hover:border-amber-800 text-stone-500 hover:text-amber-800 transition-all group-hover:bg-amber-800 group-hover:text-[#f5f0e8] group-hover:border-amber-800">
                                 →
                               </span>

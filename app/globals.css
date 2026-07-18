@@ -128,3 +128,9 @@
     @apply font-sans;
   }
 }
+
+html.lightbox-open nav.fixed {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: opacity 0.3s ease;
+}
