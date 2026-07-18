@@ -134,3 +134,7 @@ html.lightbox-open nav.fixed {
   pointer-events: none !important;
   transition: opacity 0.3s ease;
 }
+
+html.lightbox-open, html.lightbox-open body {
+  overflow: hidden !important;
+}

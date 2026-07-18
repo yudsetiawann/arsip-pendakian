@@ -5,9 +5,6 @@ import { notFound } from "next/navigation";
 import Lightbox from "@/components/gallery/Lightbox";
 import { Calendar, MapPin, Milestone, ArrowLeft, Layers } from "lucide-react";
 
-// Force static rendering (Next.js will generate this route statically at build time)
-export const dynamic = "force-static";
-
 export async function generateStaticParams() {
   const slugsData = await getGunungSlugs();
   return (slugsData || [])

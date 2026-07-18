@@ -44,8 +44,8 @@ export default function Lightbox({
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!selectedImage) return;
-      if (e.key === "ArrowLeft") handlePrev();
-      if (e.key === "ArrowRight") handleNext();
+      if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") handlePrev();
+      if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") handleNext();
       if (e.key === "Escape") setSelectedImage(null);
     };
 
