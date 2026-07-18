@@ -12,6 +12,7 @@ export const client = createClient({
 // Helper untuk URL Gambar Sanity
 const builder = createImageUrlBuilder(client);
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function urlFor(source: any) {
   return builder.image(source);
 }
@@ -56,4 +57,11 @@ export async function getGunungBySlug(slug: string) {
   }`;
 
   return client.fetch(query, { slug });
+}
+
+export async function getGunungSlugs() {
+  const query = `*[_type == "gunung"] {
+    "slug": slug.current
+  }`;
+  return client.fetch(query);
 }

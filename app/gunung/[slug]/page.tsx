@@ -1,8 +1,21 @@
-import { getGunungBySlug, urlFor } from "@/lib/sanity-utils";
+import { getGunungBySlug, getGunungSlugs, urlFor } from "@/lib/sanity-utils";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Lightbox from "@/components/gallery/Lightbox";
+import { Calendar, MapPin, Milestone, ArrowLeft, Layers } from "lucide-react";
+
+// Force static rendering (Next.js will generate this route statically at build time)
+export const dynamic = "force-static";
+
+export async function generateStaticParams() {
+  const slugsData = await getGunungSlugs();
+  return (slugsData || [])
+    .filter((g: { slug: string }) => g.slug)
+    .map((g: { slug: string }) => ({
+      slug: g.slug,
+    }));
+}
 
 export async function generateMetadata({
   params,
@@ -13,7 +26,7 @@ export async function generateMetadata({
   const gunung = await getGunungBySlug(slug);
 
   if (!gunung) return { title: "Gunung Tidak Ditemukan" };
-  return { title: `${gunung.title} | Arsip Visual` };
+  return { title: `${gunung.title} | Arsip Visual Pendakian` };
 }
 
 export default async function GunungDetail({
@@ -29,152 +42,143 @@ export default async function GunungDetail({
   }
 
   return (
-    <main className="relative min-h-screen bg-[#f5f0e8] text-[#1a1510] overflow-x-hidden">
-      {/* Topo map background texture (Konsisten dengan Homepage) */}
+    <main className="relative min-h-screen bg-[#f5f0e8] text-[#1a1510] pb-24 pt-16 px-4 md:px-8 overflow-hidden">
+      {/* Topographic Background Overlay */}
       <div
-        className="fixed inset-0 z-0 pointer-events-none opacity-[0.04]"
+        className="fixed inset-0 z-0 pointer-events-none opacity-[0.05]"
         style={{
           backgroundImage: `
-            repeating-radial-gradient(ellipse 200px 120px at 30% 40%, transparent 0, transparent 18px, #4a5c3a 19px, transparent 20px),
-            repeating-radial-gradient(ellipse 150px 90px at 80% 20%, transparent 0, transparent 12px, #1a1510 13px, transparent 14px)
+            repeating-radial-gradient(ellipse 200px 120px at 70% 30%, transparent 0, transparent 18px, #4a5c3a 19px, transparent 20px),
+            repeating-radial-gradient(ellipse 150px 90px at 15% 70%, transparent 0, transparent 12px, #1a1510 13px, transparent 14px)
           `,
         }}
       />
 
-      <div className="relative z-10 max-w-2xl mx-auto pb-24">
-        {/* ── NAVIGATION ── */}
-        <nav className="px-5 pt-8">
-          <Link
-            href="/"
-            className="group inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.2em] text-[#8b4513]"
-          >
-            <span className="transition-transform duration-300 group-hover:-translate-x-1">
-              ←
-            </span>
-            <span>Kembali ke Index_Arsip</span>
-          </Link>
-        </nav>
+      <div className="relative z-10 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 mt-8">
+        
+        {/* ── LEFT COLUMN: EDITORIAL METADATA & FIELD NOTES (Sticky on Desktop) ── */}
+        <section className="lg:col-span-5 flex flex-col justify-start lg:sticky lg:top-24 lg:h-[calc(100vh-140px)] gap-6 overflow-y-auto scrollbar-none pr-0 lg:pr-6 border-b lg:border-b-0 lg:border-r border-[#c8b896] pb-8 lg:pb-0">
+          {/* Back Navigation */}
+          <div>
+            <Link
+              href="/"
+              className="group inline-flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.2em] text-stone-500 hover:text-amber-800 transition-colors"
+            >
+              <ArrowLeft size={10} className="transition-transform duration-300 group-hover:-translate-x-1" />
+              <span>Kembali ke Index_Arsip</span>
+            </Link>
+          </div>
 
-        {/* ── HEADER DETAIL ── */}
-        <header className="px-5 pt-12 pb-10">
-          <div className="flex items-center gap-3 mb-6">
-            <span className="w-12 h-px bg-[#c8b896]"></span>
-            <p className="font-mono text-[9px] uppercase tracking-[0.3em] text-[#4a5c3a]">
-              Data_Field_Report
+          {/* Title Header */}
+          <div>
+            <div className="flex items-center gap-2 font-mono text-[8px] text-[#4a5c3a] uppercase tracking-[0.3em] mb-2">
+              <Layers size={10} />
+              Dokumen Ekspedisi
+            </div>
+            <h1 className="font-serif text-[44px] md:text-[64px] font-black leading-[0.88] tracking-[-3px] text-[#1a1510] mb-2">
+              {gunung.title}
+            </h1>
+            <p className="font-mono text-xs text-amber-800 uppercase tracking-widest font-semibold">
+              {gunung.elevasi}m ASL // {gunung.provinsi}
             </p>
           </div>
 
-          <h1 className="font-serif text-[64px] md:text-[90px] font-black leading-[0.85] tracking-[-4px] text-[#1a1510] mb-8">
-            {gunung.title}
-            {gunung.status === "Aktif" && (
-              <span className="inline-block align-top ml-2 text-[#8b4513] text-sm font-mono tracking-normal">
-                ●
-              </span>
-            )}
-          </h1>
-
-          {/* Technical Stats Grid */}
-          <div className="grid grid-cols-2 border-y border-[#c8b896] py-6 gap-y-6">
-            <div className="border-r border-[#e8e0d0] pr-4">
-              <p className="font-mono text-[8px] uppercase tracking-[0.2em] text-[#c8b896] mb-1">
-                Ketinggian
+          {/* Technical Info Grid */}
+          <div className="grid grid-cols-2 gap-4 border-y border-[#c8b896] py-5">
+            <div>
+              <p className="font-mono text-[7px] uppercase tracking-wider text-stone-400 mb-1 flex items-center gap-1">
+                <MapPin size={8} /> Wilayah
               </p>
-              <p className="font-serif text-2xl font-bold text-[#1a1510]">
-                {gunung.elevasi}m{" "}
-                <span className="text-sm font-normal text-[#c8b896]">ASL</span>
-              </p>
-            </div>
-            <div className="pl-6">
-              <p className="font-mono text-[8px] uppercase tracking-[0.2em] text-[#c8b896] mb-1">
-                Tanggal_Ekspedisi
-              </p>
-              <p className="font-serif text-2xl font-bold text-[#1a1510]">
-                {gunung.tanggal
-                  ? new Date(gunung.tanggal).getFullYear()
-                  : "N/A"}
-              </p>
-            </div>
-            <div className="border-r border-[#e8e0d0] pr-4">
-              <p className="font-mono text-[8px] uppercase tracking-[0.2em] text-[#c8b896] mb-1">
-                Wilayah_Administrasi
-              </p>
-              <p className="font-serif text-lg font-bold text-[#4a5c3a]">
+              <p className="font-serif text-base font-bold text-stone-800 leading-tight">
                 {gunung.provinsi ?? "Indonesia"}
               </p>
             </div>
-            <div className="pl-6">
-              <p className="font-mono text-[8px] uppercase tracking-[0.2em] text-[#c8b896] mb-1">
-                Akses_Rute
+            <div>
+              <p className="font-mono text-[7px] uppercase tracking-wider text-stone-400 mb-1 flex items-center gap-1">
+                <Milestone size={8} /> Akses Jalur
               </p>
-              <p className="font-serif text-lg font-bold text-[#1a1510]">
-                {gunung.jalur ?? "Standard"}
+              <p className="font-serif text-base font-bold text-stone-800 leading-tight">
+                {gunung.jalur ?? "Via Basecamp"}
+              </p>
+            </div>
+            <div className="mt-2">
+              <p className="font-mono text-[7px] uppercase tracking-wider text-stone-400 mb-1 flex items-center gap-1">
+                <Calendar size={8} /> Tahun Ekspedisi
+              </p>
+              <p className="font-serif text-base font-bold text-stone-800 leading-tight">
+                {gunung.tanggal ? new Date(gunung.tanggal).getFullYear() : "—"}
+              </p>
+            </div>
+            <div className="mt-2">
+              <p className="font-mono text-[7px] uppercase tracking-wider text-stone-400 mb-1 flex items-center gap-1">
+                Status Arsip
+              </p>
+              <p className="font-mono text-[9px] uppercase tracking-widest text-[#4a5c3a] font-bold mt-1 flex items-center gap-1">
+                <span className="w-1.5 h-1.5 bg-[#4a5c3a] rounded-full" /> Terbuka
               </p>
             </div>
           </div>
-        </header>
 
-        {/* ── COVER IMAGE (Wide) ── */}
-        <section className="px-5 mb-16">
-          <div className="relative aspect-16/10 border border-[#c8b896] p-2 bg-[#e8e0d0]/50">
-            <div className="relative w-full h-full overflow-hidden">
+          {/* Travel narrative / Field notes */}
+          {gunung.narasi && (
+            <div className="relative pl-5 border-l-2 border-[#4a5c3a] py-1 bg-white/20 rounded-r">
+              <p className="font-mono text-[8px] uppercase tracking-widest text-amber-800 mb-2 font-semibold">
+                Catatan_Perjalanan //
+              </p>
+              <p className="font-serif text-lg leading-relaxed text-stone-700 italic">
+                &ldquo;{gunung.narasi}&rdquo;
+              </p>
+            </div>
+          )}
+
+          {/* Footer Copyright */}
+          <div className="mt-auto pt-6 text-[8px] font-mono text-stone-400 leading-loose">
+            <p>Seluruh dokumen visual diambil di lapangan secara asli.</p>
+            <p>© {new Date().getFullYear()} Muhammad Yudi Setiawan. All rights reserved.</p>
+          </div>
+        </section>
+
+        {/* ── RIGHT COLUMN: HIGH-RES COVER & GALLERY MASONRY (Scrollable) ── */}
+        <section className="lg:col-span-7 flex flex-col gap-10">
+          
+          {/* Main cover image */}
+          <div className="relative aspect-16/10 rounded overflow-hidden border border-[#c8b896] p-2 bg-[#e8e0d0]/50 shadow-md">
+            <div className="relative w-full h-full rounded overflow-hidden">
               <Image
                 src={urlFor(gunung.coverImage).width(1200).url()}
                 alt={gunung.title}
                 fill
-                className="object-cover sepia-20 contrast-[1.05]"
+                priority
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover transition-transform duration-700 ease-out hover:scale-102 filter sepia-10 hover:sepia-0"
               />
             </div>
           </div>
-        </section>
 
-        {/* ── NARRATIVE / FIELD NOTES ── */}
-        {gunung.narasi && (
-          <section className="px-5 mb-20 relative">
-            <span className="absolute -left-2 top-0 text-4xl text-[#c8b896] font-serif opacity-50">
-              "
-            </span>
-            <div className="pl-6 border-l-2 border-[#4a5c3a]">
-              <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#8b4513] mb-4">
-                Catatan_Perjalanan //
-              </p>
-              <p className="font-serif text-xl md:text-2xl leading-relaxed text-[#1a1510]/90 italic">
-                {gunung.narasi}
-              </p>
-            </div>
-          </section>
-        )}
+          {/* Visual Archive Grid / Gallery */}
+          {gunung.gallery && gunung.gallery.length > 0 ? (
+            <div className="border-t border-[#c8b896] pt-8">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="font-mono text-[9px] uppercase tracking-[0.3em] text-[#1a1510] font-bold flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 bg-amber-800 rounded-full" />
+                  Galeri Visual Dokumentasi
+                </h2>
+                <span className="font-mono text-[8px] text-stone-400">
+                  Total File: {gunung.gallery.length}
+                </span>
+              </div>
 
-        {/* ── VISUAL ARCHIVE (Gallery) ── */}
-        {gunung.gallery && gunung.gallery.length > 0 && (
-          <section className="px-5 border-t border-[#c8b896] pt-12">
-            <div className="flex justify-between items-center mb-10">
-              <h2 className="font-mono text-[10px] uppercase tracking-[0.4em] text-[#1a1510] font-bold">
-                ▲ Galeri_Dokumentasi
-              </h2>
-              <span className="font-mono text-[8px] text-[#c8b896]">
-                Item_Count: {gunung.gallery.length}
-              </span>
-            </div>
-
-            {/* Lightbox dengan styling khusus agar menyatu */}
-            <div className="gallery-wrapper border-b border-[#e8e0d0] pb-12">
+              {/* Lightbox masonry grid */}
               <Lightbox images={gunung.gallery} mountainTitle={gunung.title} />
             </div>
-          </section>
-        )}
+          ) : (
+            <div className="border-t border-dashed border-[#c8b896] rounded p-8 text-center bg-white/20">
+              <p className="font-serif text-sm italic text-stone-500">Galeri foto tidak tersedia untuk arsip ini</p>
+            </div>
+          )}
 
-        {/* ── DATA FOOTER ── */}
-        <footer className="px-5 mt-20 pt-8 border-t border-[#c8b896] flex flex-col gap-4">
-          <div className="flex justify-between font-mono text-[8px] uppercase tracking-[0.2em] text-[#c8b896]">
-            {/* <span>Verified_Record // 2026</span> */}
-            <span>{gunung.title}_IDX_001</span>
-          </div>
-          <p className="font-mono text-[8px] leading-loose text-[#c8b896]">
-            Seluruh data visual di atas diambil dalam kondisi lapangan asli.
-            Dilarang menggunakan tanpa izin tertulis dari arsiparis:
-            <span className="text-[#1a1510]"> Muhammad Yudi Setiawan.</span>
-          </p>
-        </footer>
+        </section>
+
       </div>
     </main>
   );
